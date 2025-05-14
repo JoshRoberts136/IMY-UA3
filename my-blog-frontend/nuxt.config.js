@@ -1,4 +1,9 @@
-export default {
+export default defineNuxtConfig({
+  modules: ['@nuxtjs/tailwindcss'],
   css: ['~/assets/css/tailwind.css'],
-  buildModules: ['@nuxtjs/tailwindcss'],
-};
+  runtimeConfig: {
+    public: {
+      strapiUrl: process.env.STRAPI_URL || 'http://localhost:1337',
+    },
+  },
+});
