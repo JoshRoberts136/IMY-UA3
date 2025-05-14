@@ -1,6 +1,6 @@
+<!-- Josh Roberts, u23536765-->
 <template>
   <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
+    <NuxtPage />
   </div>
 </template>
