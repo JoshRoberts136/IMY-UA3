@@ -1,0 +1,8 @@
+Working with Docker and Strapi for this blog application was both challenging and educational. Setting up Strapi was straightforward, allowing quick creation of the blog-posts schema with relations (categorys, author). Docker simplified environment consistency, but configuring the Dockerfile for Nuxt.js required troubleshooting port mappings. The main challenge was Nuxt.js integration, particularly rendering Strapi data on the homepage. Errors in accessing categorys.Cat due to API response structure mismatches caused persistent “No posts found” issues. Debugging required normalizing API responses and simplifying reactivity.
+
+I learned the importance of validating API response structures early and using tools like curl to confirm endpoints. Commands like `curl "http://localhost:1337/api/articles?populate[author]=true&populate[categorys]=true"` verified posts, while `curl "http://localhost:1337/api/categories"` exposed category schema issues. Strapi’s flexibility with relations (e.g., Many-to-One for categorys) was powerful but required precise frontend handling.
+
+This project taught me resilience in debugging frontend-backend integration and the value of Docker for reproducible setups. The GitHub repo is at https://github.com/JoshRoberts136/IMY-UA3/tree/main. Setup commands for markers:
+- Backend: `cd my-blog-backend; npm install; npm run develop`
+- Frontend: `cd my-blog-frontend; npm install; npm run dev`
+- Docker: `cd my-blog-frontend; docker build -t my-blog-frontend .; docker run -p 3000:3000 my-blog-frontend`

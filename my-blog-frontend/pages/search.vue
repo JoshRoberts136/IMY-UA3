@@ -1,30 +1,23 @@
 <template>
   <div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Search Posts</h1>
-    <div class="mb-6">
-      <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search by Title or Author</label>
-      <input
-        id="search"
-        v-model="searchQuery"
-        @input="searchPosts"
-        type="text"
-        placeholder="Enter title or author..."
-        class="p-2 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Search Results</h1>
+    <p class="text-gray-600 mb-4">Showing results for: "{{ query }}"</p>
+
     <div v-if="posts.length === 0" class="text-gray-500 text-center">No posts found.</div>
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <div
+    <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <nuxt-link
         v-for="post in posts"
         :key="post.id"
+        :to="`/post/${post.id}`"
         class="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
       >
-        <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ post.attributes.title }}</h2>
-        <p class="text-gray-600 text-sm mb-2">By {{ post.attributes.author }}</p>
-        <p class="text-gray-700 mb-3">{{ post.attributes.snippet }}</p>
-        <p class="text-sm text-gray-500">Category: {{ post.attributes.category }}</p>
-      </div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ post.title }}</h2>
+        <p class="text-gray-600 text-sm mb-2">By {{ post.author?.name || 'Unknown Author' }}</p>
+        <p class="text-gray-700 mb-3">{{ truncateDescription(post.description) }}</p>
+        <p class="text-sm text-gray-500">Category: {{ post.categorys?.Cat || 'Uncategorized' }}</p>
+      </nuxt-link>
     </div>
+    <nuxt-link to="/" class="text-blue-500 hover:underline mt-4 inline-block">Back to Home</nuxt-link>
   </div>
 </template>
 
@@ -33,30 +26,35 @@ export default {
   data() {
     return {
       posts: [],
-      searchQuery: '',
+      query: this.$route.query.query || '',
     };
   },
   methods: {
-    async searchPosts() {
+    async fetchPosts() {
       try {
-        let url = `${process.env.STRAPI_URL}/api/blog-posts`;
-        if (this.searchQuery) {
-          url += `?filters[$or][0][title][$containsi]=${encodeURIComponent(this.searchQuery)}&filters[$or][1][author][$containsi]=${encodeURIComponent(this.searchQuery)}`;
+        const url = `http://localhost:1337/api/articles?populate[author]=true&populate[categorys]=true&filters[$or][0][title][$containsi]=${encodeURIComponent(this.query)}&filters[$or][1][description][$containsi]=${encodeURIComponent(this.query)}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const response = await this.$http.$get(url);
-        this.posts = response.data;
+        const data = await response.json();
+        this.posts = Array.isArray(data.data) ? data.data.map(item => ({
+          id: item.id,
+          title: item.attributes.title,
+          description: item.attributes.description,
+          author: item.attributes.author || null,
+          categorys: item.attributes.categorys || null,
+        })) : [];
       } catch (error) {
-        console.error('Error searching posts:', error);
+        this.posts = [];
       }
     },
+    truncateDescription(text) {
+      return text && text.length > 80 ? text.slice(0, 80) + '...' : text || '';
+    },
   },
-  async fetch() {
-    try {
-      const response = await this.$http.$get(`${process.env.STRAPI_URL}/api/blog-posts`);
-      this.posts = response.data;
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    }
+  async created() {
+    await this.fetchPosts();
   },
 };
 </script>
