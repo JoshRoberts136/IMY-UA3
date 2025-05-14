@@ -15,16 +15,10 @@
     "name": {
       "type": "string"
     },
-    "avatar": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": ["images", "files", "videos"]
-    },
     "email": {
       "type": "string"
     },
-    "articles": {
+    "blog_posts": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::article.article",
