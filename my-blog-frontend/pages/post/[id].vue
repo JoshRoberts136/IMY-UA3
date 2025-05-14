@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post?.title || 'Post Not Found' }}</h1>
     <p class="text-gray-600 text-sm mb-2">By {{ post?.author?.name || 'Unknown Author' }}</p>
     <p class="text-gray-700 mb-3">{{ post?.description || 'No description available.' }}</p>
-    <p class="text-sm text-gray-500">Category: {{ post?.categorys?.Cat || 'Uncategorized' }}</p>
+    <p class="text-sm text-gray-500">Category: {{ post?.category?.name || 'Uncategorized' }}</p>
     <nuxt-link to="/" class="text-blue-500 hover:underline mt-4 inline-block">Back to Home</nuxt-link>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
         title: data.data.attributes.title,
         description: data.data.attributes.description,
         author: data.data.attributes.author || null,
-        categorys: data.data.attributes.categorys || null,
+        category: data.data.attributes.categorys || null,
       } : null;
     } catch (error) {
       this.post = null;

@@ -1,8 +1,6 @@
 <template>
   <div class="container mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome to My Blog</h1>
-
-    <!-- Search Input -->
     <div class="mb-6">
       <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search Posts</label>
       <input
@@ -14,8 +12,6 @@
         class="p-2 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
-
-    <!-- Category Dropdown -->
     <div class="mb-6">
       <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Filter by Category</label>
       <select
@@ -26,15 +22,11 @@
       >
         <option value="">All Categories</option>
         <option v-for="category in categories" :key="category.id" :value="category.id">
-          {{ category.Cat || 'Unknown Category' }}
+          {{ category.name || 'Unknown Category' }}
         </option>
       </select>
     </div>
-
-    <!-- Debug Count -->
     <div class="mb-4 text-gray-600">Posts: {{ posts.length }}</div>
-
-    <!-- Blog Posts -->
     <div v-if="posts.length === 0" class="text-gray-500 text-center">No posts found.</div>
     <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <nuxt-link
@@ -46,7 +38,7 @@
         <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ post.title }}</h2>
         <p class="text-gray-600 text-sm mb-2">By {{ post.author?.name || 'Unknown Author' }}</p>
         <p class="text-gray-700 mb-3">{{ truncateDescription(post.description) }}</p>
-        <p class="text-sm text-gray-500">Category: {{ post.categorys?.Cat || 'Uncategorized' }}</p>
+        <p class="text-sm text-gray-500">Category: {{ post.category?.name || 'Uncategorized' }}</p>
       </nuxt-link>
     </div>
   </div>
@@ -79,7 +71,7 @@ export default {
           title: item.attributes.title,
           description: item.attributes.description,
           author: item.attributes.author || null,
-          categorys: item.attributes.categorys || null,
+          category: item.attributes.categorys || null,
         })) : [];
       } catch (error) {
         this.posts = [];
@@ -96,7 +88,7 @@ export default {
   },
   async created() {
     try {
-      // Fetch categories
+
       const categoriesResponse = await fetch(`http://localhost:1337/api/categories`);
       if (!categoriesResponse.ok) {
         throw new Error(`HTTP error! Status: ${categoriesResponse.status}`);
@@ -104,10 +96,9 @@ export default {
       const categoriesData = await categoriesResponse.json();
       this.categories = Array.isArray(categoriesData.data) ? categoriesData.data.map(item => ({
         id: item.id,
-        Cat: item.attributes.Cat || 'Unknown',
+        name: item.attributes.Cat || 'Unknown',
       })) : [];
 
-      // Fetch all posts
       await this.fetchPosts();
     } catch (error) {
       this.posts = [];

@@ -14,7 +14,7 @@
         <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ post.title }}</h2>
         <p class="text-gray-600 text-sm mb-2">By {{ post.author?.name || 'Unknown Author' }}</p>
         <p class="text-gray-700 mb-3">{{ truncateDescription(post.description) }}</p>
-        <p class="text-sm text-gray-500">Category: {{ post.categorys?.Cat || 'Uncategorized' }}</p>
+        <p class="text-sm text-gray-500">Category: {{ post.category?.name || 'Uncategorized' }}</p>
       </nuxt-link>
     </div>
     <nuxt-link to="/" class="text-blue-500 hover:underline mt-4 inline-block">Back to Home</nuxt-link>
@@ -43,7 +43,7 @@ export default {
           title: item.attributes.title,
           description: item.attributes.description,
           author: item.attributes.author || null,
-          categorys: item.attributes.categorys || null,
+          category: item.attributes.categorys || null,
         })) : [];
       } catch (error) {
         this.posts = [];
